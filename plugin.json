@@ -1,0 +1,14 @@
+{
+  "ID": "9f3525da-af82-4733-9654-860eaf2e756d",
+  "ActionKeyword": "/w",
+  "Disabled": false,
+  "IsGlobal": false,
+  "Name": "FastWeb",
+  "Author": "CCcat",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.FastWeb.dll",
+  "IcoPathDark": "Images\\FastWeb.dark.png",
+  "IcoPathLight": "Images\\FastWeb.light.png"
+}
