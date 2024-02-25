@@ -2,5 +2,6 @@ obj/
 bin/
 .vs/
 Lib/
+out/
 
 *.dll
