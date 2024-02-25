@@ -20,16 +20,17 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 2. Type `/w` and search for website name that you set in file.
 
 ## Debugging
-1. Copy `.dll` from the PowerToys Run folder to `.\Lib`  
+1. Make sure you have [gsudo](https://github.com/gerardog/gsudo) installed in the path.
+2. Copy `.dll` from the PowerToys Run folder to `.\Lib`  
  (using symlink or running `copyLib.ps1` is recommended).
     - `PowerToys.Settings.UI.Lib.dll`
     - `PowerToys.ManagedCommon.dll`
     - `PowerToys.Common.UI.dll`
     - `Wox.Plugin.dll`
     - `Wox.Infrastructure.dll` 
-2. Right-click on `Properties\Resources.resx` and select `Run Custom Tool`  
+3. Right-click on `Properties\Resources.resx` and select `Run Custom Tool`  
  (`Resources.Designer.cs` changes completely for unknown reasons).
-3. Build the project.
-4. Run `debug.ps1`.
+4. Build the project.
+5. Run `debug.ps1`.
 
 
