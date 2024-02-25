@@ -11,7 +11,7 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 
 
 ## Installation
-1. Download the latest release of the from the releases page.
+1. Download the latest release of the from the [releases page](https://github.com/CCcat8059/FastWeb/releases).
 2. Extract the `.zip` file's contents to `%LocalAppData%\Microsoft\PowerToys\PowerToys Run\Plugins`
 3. Restart PowerToys.
 
