@@ -142,11 +142,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         {
             if (theme == Theme.Light || theme == Theme.HighContrastWhite)
             {
-                _iconPath = "Images/FastWeb.light.png";
+                _iconPath = "Images\\FastWeb.light.png";
             }
             else
             {
-                _iconPath = "Images/FastWeb.dark.png";
+                _iconPath = "Images\\FastWeb.dark.png";
             }
         }
 
