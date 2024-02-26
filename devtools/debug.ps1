@@ -2,6 +2,7 @@
 
 Push-Location
 Set-Location $PSScriptRoot
+cd ..
 
 sudo {
 	Start-Job { Stop-Process -Name PowerToys* } | Wait-Job

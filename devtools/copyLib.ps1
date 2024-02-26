@@ -2,6 +2,7 @@
 
 Push-Location
 Set-Location $PSScriptRoot
+cd ..
 
 sudo {
 	New-Item -ItemType Directory -Force "Lib"

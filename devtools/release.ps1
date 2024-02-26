@@ -1,5 +1,6 @@
 Push-Location
 Set-Location $PSScriptRoot
+cd ..
 
 $name = 'FastWeb'
 $assembly = "Community.PowerToys.Run.Plugin.$name"

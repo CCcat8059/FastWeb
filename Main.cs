@@ -77,7 +77,6 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                         if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, element.URL))
                         {
                             _context?.API.ShowMsg($"Plugin: {Name}\ncan't open {element.URL}");
-                            Log.Warn("py", GetType());
                             return false;
                         }
                         return true;
@@ -103,6 +102,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 					}
 				];
 			}
+
 			if (string.IsNullOrEmpty(query.Search))
             {
                 return ResultMapping(WebDatas);
@@ -117,11 +117,10 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
             UpdateIconPath(_context.API.GetCurrentTheme());
-            Log.Info(Directory.GetCurrentDirectory(), GetType());
 
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string WebDataPath = Path.Combine(PluginDirectory ?? "path not found", "webdata.json");
-            WebDatas = WebData.LoadDataFromJSON(WebDataPath) ?? [];
+            WebDatas = WebData.LoadDataFromJSON(WebDataPath);
         }
 
         public string GetTranslatedPluginTitle()
@@ -194,18 +193,18 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
     {
         public string? Keyword { get; set; }
         public string? URL { get; set; }
-        public static List<WebData> LoadDataFromJSON(string filePath)
+        public static List<WebData>? LoadDataFromJSON(string filePath)
         {
             try
             {
                 string jsonString = File.ReadAllText(filePath);
                 List<WebData>? webData = JsonSerializer.Deserialize<List<WebData>>(jsonString);
-                return webData ?? [];
+                return webData;
             }
             catch (Exception ex)
 			{
 				Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
-				return [];
+				return null;
 			}
         }
     }
