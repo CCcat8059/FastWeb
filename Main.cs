@@ -4,24 +4,10 @@
 
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
-using System.Windows.Input;
-using Wox.Infrastructure;
 using Wox.Plugin;
-using Wox.Plugin.Common.Win32;
-using Wox.Plugin.Logger;
 using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
-using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
-using System.IO;
-using System.Text.Json;
-using System.Reflection;
+using Community.PowerToys.Run.Plugin.FastWeb.Classes;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb
 {
@@ -42,7 +28,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public static string PluginID => "9f3525da-af82-4733-9654-860eaf2e756d";
 
-        private List<WebData>? WebDatas;
+        private DataHandler DH => new();
 
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
         {
@@ -55,42 +41,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             }
         };
 
-        private List<WebData> GetMatchingKeywords(string input)
-        {
-			return (WebDatas ?? [])
-                .Where(k =>(k.Keyword ?? "").AsSpan().IndexOf(input.AsSpan(), StringComparison.OrdinalIgnoreCase) >= 0)
-                .ToList();
-        }
-
-        private List<Result> ResultMapping(List<WebData> datas)
-        {
-            var results = new List<Result>();
-            foreach (var element in datas)
-            {
-                results.Add(new Result
-                {
-                    Title = element.Keyword,
-                    SubTitle = element.URL,
-                    IcoPath = _iconPath,
-                    Action = action =>
-                    {
-                        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, element.URL))
-                        {
-                            _context?.API.ShowMsg($"Plugin: {Name}\ncan't open {element.URL}");
-                            return false;
-                        }
-                        return true;
-                    }
-                });
-            }
-            return results;
-        }
-
         public List<Result> Query(Query query)
         {
             ArgumentNullException.ThrowIfNull(query);
 
-			if (WebDatas is null)
+			if (DH.WebDatas is null)
 			{
 				return [
 					new Result()
@@ -105,11 +60,9 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
 			if (string.IsNullOrEmpty(query.Search))
             {
-                return ResultMapping(WebDatas);
+                return DH.GetDefaultData();
             }
-            var matchedKeywords = GetMatchingKeywords(query.Search);
-
-            return ResultMapping(matchedKeywords);
+            return DH.GetMatchingKeywords(query.Search);
         }
 
         public void Init(PluginInitContext context)
@@ -117,10 +70,6 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
             UpdateIconPath(_context.API.GetCurrentTheme());
-
-            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string WebDataPath = Path.Combine(PluginDirectory ?? "path not found", "webdata.json");
-            WebDatas = WebData.LoadDataFromJSON(WebDataPath);
         }
 
         public string GetTranslatedPluginTitle()
@@ -187,25 +136,6 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
                 _disposed = true;
             }
-        }
-    }
-    public class WebData
-    {
-        public string? Keyword { get; set; }
-        public string? URL { get; set; }
-        public static List<WebData>? LoadDataFromJSON(string filePath)
-        {
-            try
-            {
-                string jsonString = File.ReadAllText(filePath);
-                List<WebData>? webData = JsonSerializer.Deserialize<List<WebData>>(jsonString);
-                return webData;
-            }
-            catch (Exception ex)
-			{
-				Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
-				return null;
-			}
         }
     }
 }

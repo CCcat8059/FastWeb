@@ -22,7 +22,7 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 ## Debugging
 1. Make sure you have [gsudo](https://github.com/gerardog/gsudo) installed in the path.
 2. Copy `.dll` from the PowerToys Run folder to `.\Lib`  
- (using symlink or running `devtools\copyLib.ps1` is recommended).
+ (using symlink or running `Devtools\copyLib.ps1` is recommended).
     - `PowerToys.Settings.UI.Lib.dll`
     - `PowerToys.ManagedCommon.dll`
     - `PowerToys.Common.UI.dll`
@@ -31,6 +31,6 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 3. Right-click on `Properties\Resources.resx` and select `Run Custom Tool`  
  (`Resources.Designer.cs` changes completely for unknown reasons).
 4. Build the project.
-5. Run `devtools\debug.ps1`.
+5. Run `Devtools\debug.ps1`.
 
 
