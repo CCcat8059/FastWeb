@@ -4,6 +4,8 @@ Push-Location
 Set-Location $PSScriptRoot
 
 sudo {
+	New-Item -ItemType Directory -Force "Lib"
+
 	$ptPath = "C:\Program Files\PowerToys"
 
 	@(
