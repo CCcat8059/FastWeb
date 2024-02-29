@@ -113,23 +113,27 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         private async void DownloadIconAndUpdate()
         {
             bool isDownload = false;
+            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (PluginDirectory == null)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                return;
+            }
+
             foreach (var element in WebDatas ?? [])
             {
                 if (!string.IsNullOrEmpty(element.IconPath))
                 {
-                    // check is file exist
+                    continue;
+                }
+                string iconPath = Path.Combine(PluginDirectory, "Images", $"{element.Keyword}.png");
+                if (File.Exists(iconPath))
+                {
                     continue;
                 }
                 byte[]? icon = await DownloadFaviconAsync(element.URL);
                 if (icon != null)
                 {
-                    string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    if (PluginDirectory == null)
-                    {
-                        Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
-                        return;
-                    }
-                    string iconPath = Path.Combine(PluginDirectory, "Images", $"{element.Keyword}.png");
                     try
                     {
                         File.WriteAllBytes(iconPath, icon);
