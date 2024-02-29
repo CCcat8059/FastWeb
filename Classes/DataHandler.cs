@@ -11,14 +11,12 @@ using Wox.Infrastructure;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Models;
-using System.Windows.Documents;
-using System.Net.Http;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
 {
     public class DataHandler
     {
-        public List<WebData>? WebDatas { get; set; }
+        public List<WebData>? WebDatas { get; }
         public DataHandler()
         {
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -30,9 +28,9 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             string WebDataPath = Path.Combine(PluginDirectory, @"Settings\webdata.json");
             WebDatas = LoadDataFromJSON(WebDataPath);
 
-            DownloadIconAndUpdate();
+            Task.Run(DownloadIconAndUpdate);
         }
-        private List<WebData>? LoadDataFromJSON(string filePath)
+        private static List<WebData>? LoadDataFromJSON(string filePath)
         {
             try
             {
@@ -46,7 +44,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 return null;
             }
         }
-        private List<Result> GetMappedResult(List<WebData> webDatas)
+        private static List<Result> GetMappedResult(List<WebData> webDatas)
         {
             var results = new List<Result>();
             if (webDatas == null)
@@ -91,7 +89,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             return GetMappedResult(results);
         }
         public List<Result> GetDefaultData() => GetMappedResult(WebDatas ?? []);
-        public void UpdateWebDatasToJSON()
+        public void DumpWebDatasToJSON()
         {
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (PluginDirectory == null)
@@ -112,64 +110,29 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         }
         private async void DownloadIconAndUpdate()
         {
-            bool isDownload = false;
-            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (PluginDirectory == null)
+            if (WebDatas == null)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
                 return;
             }
-
-            foreach (var element in WebDatas ?? [])
-            {
-                if (!string.IsNullOrEmpty(element.IconPath))
-                {
-                    continue;
-                }
-                string iconPath = Path.Combine(PluginDirectory, "Images", $"{element.Keyword}.png");
-                if (File.Exists(iconPath))
-                {
-                    continue;
-                }
-                byte[]? icon = await DownloadFaviconAsync(element.URL);
-                if (icon != null)
-                {
-                    try
-                    {
-                        File.WriteAllBytes(iconPath, icon);
-                        element.IconPath = $@"Images\{element.Keyword}.png";
-                        isDownload = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
-                    }
-                }
-            }
-            if (isDownload)
-            {
-                UpdateWebDatasToJSON();
-            }
-        }
-        private async Task<byte[]>? DownloadFaviconAsync(string url)
-        {
-            string faviconUrl = new Uri(url).GetLeftPart(UriPartial.Authority) + "/favicon.ico";
+            List<Task<bool>> tasks = WebDatas.Select(k => k.DownloadIcon()).ToList();
+            await Task.WhenAll(tasks);
             try
             {
-                using (var client = new HttpClient())
-                {
-                    HttpResponseMessage response = await client.GetAsync(faviconUrl);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return await response.Content.ReadAsByteArrayAsync();
-                    }
-                }
             }
             catch (Exception ex)
             {
                 Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
             }
-            return null;
+            if (tasks.Any(k => k.Result))
+            {
+                DumpWebDatasToJSON();
+            }
+        }
+        public void AddWebData(WebData webData)
+        {
+            WebDatas?.Add(webData);
+            DumpWebDatasToJSON();
+            DownloadIconAndUpdate();
         }
     }
 }

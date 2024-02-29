@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using Wox.Plugin;
 using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
 using Community.PowerToys.Run.Plugin.FastWeb.Classes;
+using Community.PowerToys.Run.Plugin.FastWeb.Models;
+using Wox.Plugin.Logger;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb
 {
@@ -28,7 +30,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public static string PluginID => "9f3525da-af82-4733-9654-860eaf2e756d";
 
-        private DataHandler DH => new();
+        private DataHandler DH;
 
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
         {
@@ -58,6 +60,38 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 				];
 			}
 
+            if (query.Search.StartsWith("+"))
+            {
+                List<string> terms = new(query.Terms);
+                if (terms.Count < 2)
+                {
+                    return [
+                        new Result()
+                        {
+                            Title = "Add new keyword",
+                            SubTitle = "Usage: /w+ [keyword] [URL]",
+                            IcoPath = _iconPath,
+                            Action = action => { return true; }
+                        }
+                    ];
+                }
+                terms.RemoveAt(0);
+                string keyword = terms[0], url = terms[1];
+                return [
+                    new Result()
+                    {
+                        Title = "Add new keyword",
+                        SubTitle = $"Keyword: {keyword}, URL: {url}",
+                        IcoPath = _iconPath,
+                        Action = action =>
+                        {
+                            DH.AddWebData(new(keyword, url));
+                            return true;
+                        }
+                    }
+                ];
+            }
+
 			if (string.IsNullOrEmpty(query.Search))
             {
                 return DH.GetDefaultData();
@@ -70,6 +104,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
             UpdateIconPath(_context.API.GetCurrentTheme());
+            DH = new();
         }
 
         public string GetTranslatedPluginTitle()

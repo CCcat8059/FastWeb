@@ -3,6 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 
+using System.ComponentModel;
+using System.IO;
+using System.Net.Http;
+using System.Reflection;
+using Wox.Plugin.Logger;
+
 namespace Community.PowerToys.Run.Plugin.FastWeb.Models
 {
     public class WebData
@@ -10,5 +16,62 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
         public string Keyword { get; set; } = "";
         public string URL { get; set; } = "";
         public string IconPath { get; set; } = "";
+        public WebData(string Keyword, string URL)
+        {
+            this.Keyword = Keyword;
+            this.URL = URL;
+        }
+        public async Task<bool> DownloadIcon()
+        {
+            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (PluginDirectory == null)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                return false;
+            }
+
+            string iconPath = Path.Combine(PluginDirectory, "Images", $"{Keyword}.png");
+            if (!string.IsNullOrEmpty(IconPath) && File.Exists(iconPath))
+            {
+                IconPath = $@"Images\{Keyword}.png";
+                return false;
+            }
+
+            byte[] icon = await DownloadFaviconAsync(URL);
+            if (icon.Length == 0)
+            {
+                return false;
+            }
+
+            try
+            {
+                await File.WriteAllBytesAsync(iconPath, icon);
+                IconPath = $@"Images\{Keyword}.png";
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+                return false;
+            }
+            return true;
+        }
+        private static async Task<byte[]> DownloadFaviconAsync(string url)
+        {
+            try
+            {
+                string faviconUrl = new Uri(url).GetLeftPart(UriPartial.Authority) + "/favicon.ico";
+                using HttpClient client = new();
+                HttpResponseMessage response = await client.GetAsync(faviconUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+            }
+            return [];
+        }
     }
 }
