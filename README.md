@@ -4,7 +4,8 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 
 ## Features
 ### Open link in browser
-![image](https://github.com/CCcat8059/FastWeb/assets/55608737/fae6a3ac-ea7c-4b61-8a93-505f2c8dfa6f)
+![image](https://github.com/CCcat8059/FastWeb/assets/55608737/24e497b2-c350-4d2a-9017-c467ad3caa1a)
+
 
 ### Set your own favorite website in config file
 ![image](https://github.com/CCcat8059/FastWeb/assets/55608737/7801b318-db62-41a2-8700-49b86f0f2035)
