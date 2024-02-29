@@ -7,7 +7,7 @@
   "Author": "CCcat",
   "Version": "1.1.1",
   "Language": "csharp",
-  "Website": "",
+  "Website": "https://github.com/CCcat8059/FastWeb",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.FastWeb.dll",
   "IcoPathDark": "Images\\FastWeb.dark.png",
   "IcoPathLight": "Images\\FastWeb.light.png"
