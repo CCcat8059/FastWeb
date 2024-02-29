@@ -12,6 +12,7 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Models;
 using System.Windows.Documents;
+using System.Net.Http;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
 {
@@ -21,8 +22,15 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         public DataHandler()
         {
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string WebDataPath = Path.Combine(PluginDirectory ?? "path not found", @"Settings\webdata.json");
+            if (PluginDirectory == null)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                return;
+            }
+            string WebDataPath = Path.Combine(PluginDirectory, @"Settings\webdata.json");
             WebDatas = LoadDataFromJSON(WebDataPath);
+
+            DownloadIconAndUpdate();
         }
         private List<WebData>? LoadDataFromJSON(string filePath)
         {
@@ -82,9 +90,82 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 .ToList();
             return GetMappedResult(results);
         }
-        public List<Result> GetDefaultData()
+        public List<Result> GetDefaultData() => GetMappedResult(WebDatas ?? []);
+        public void UpdateWebDatasToJSON()
         {
-            return GetMappedResult(WebDatas ?? []);
+            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (PluginDirectory == null)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                return;
+            }
+            string WebDataPath = Path.Combine(PluginDirectory, @"Settings\webdata.json");
+            string jsonString = JsonSerializer.Serialize(WebDatas);
+            try
+            {
+                File.WriteAllText(WebDataPath, jsonString);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+            }
+        }
+        private async void DownloadIconAndUpdate()
+        {
+            bool isDownload = false;
+            foreach (var element in WebDatas ?? [])
+            {
+                if (!string.IsNullOrEmpty(element.IconPath))
+                {
+                    // check is file exist
+                    continue;
+                }
+                byte[]? icon = await DownloadFaviconAsync(element.URL);
+                if (icon != null)
+                {
+                    string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    if (PluginDirectory == null)
+                    {
+                        Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                        return;
+                    }
+                    string iconPath = Path.Combine(PluginDirectory, "Images", $"{element.Keyword}.png");
+                    try
+                    {
+                        File.WriteAllBytes(iconPath, icon);
+                        element.IconPath = $@"Images\{element.Keyword}.png";
+                        isDownload = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+                    }
+                }
+            }
+            if (isDownload)
+            {
+                UpdateWebDatasToJSON();
+            }
+        }
+        private async Task<byte[]>? DownloadFaviconAsync(string url)
+        {
+            string faviconUrl = new Uri(url).GetLeftPart(UriPartial.Authority) + "/favicon.ico";
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(faviconUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return await response.Content.ReadAsByteArrayAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+            }
+            return null;
         }
     }
 }

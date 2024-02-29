@@ -5,7 +5,7 @@
   "IsGlobal": false,
   "Name": "FastWeb",
   "Author": "CCcat",
-  "Version": "1.0.1",
+  "Version": "1.1.0",
   "Language": "csharp",
   "Website": "",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.FastWeb.dll",

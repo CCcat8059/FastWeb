@@ -7,8 +7,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
 {
     public class WebData
     {
-        public string Keyword { get; set; }
-        public string URL { get; set; }
-        public string IconPath { get; set; }
+        public string Keyword { get; set; } = "";
+        public string URL { get; set; } = "";
+        public string IconPath { get; set; } = "";
     }
 }
