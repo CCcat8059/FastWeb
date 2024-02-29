@@ -21,7 +21,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         public DataHandler()
         {
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string WebDataPath = Path.Combine(PluginDirectory ?? "path not found", "webdata.json");
+            string WebDataPath = Path.Combine(PluginDirectory ?? "path not found", @"Settings\webdata.json");
             WebDatas = LoadDataFromJSON(WebDataPath);
         }
         private List<WebData>? LoadDataFromJSON(string filePath)

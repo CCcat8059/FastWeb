@@ -68,7 +68,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="webdata.json">
+      <None Update="Settings\webdata.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

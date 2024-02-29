@@ -23,8 +23,8 @@ foreach ($arch in $archs) {
 		"$releasePath/$assembly.dll",
 		"$releasePath/plugin.json",
 		"$releasePath/Images",
-		"$releasePath/$assembly.deps.json",
-		"$releasePath/webdata.json"
+		"$releasePath/Settings",
+		"$releasePath/$assembly.deps.json"
 	)
 	Copy-Item $files "./release/$name" -Recurse -Force
 	Compress-Archive "./release/$name" "./release/$name-$version-$arch.zip" -Force

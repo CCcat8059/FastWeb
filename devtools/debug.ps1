@@ -16,7 +16,7 @@ sudo {
 		"Community.PowerToys.Run.Plugin.$project.deps.json",
 		"Community.PowerToys.Run.Plugin.$project.dll",
 		'plugin.json',
-		'webdata.json',
+		'Settings',
 		'Images'
 	)
 
