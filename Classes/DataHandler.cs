@@ -36,7 +36,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             }
             WebDatas = LoadDataFromJSON(WebDataPath);
 
-            _ = Task.Run(DownloadIconAndUpdate);
+            _ = Task.Run(() => DownloadIconAndUpdate());
         }
         private static List<WebData> LoadDataFromJSON(string filePath)
         {
@@ -92,13 +92,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             return GetMappedResult(results);
         }
         public List<Result> GetDefaultData() => GetMappedResult(WebDatas);
+        /// <summary>
+        ///     Must check PluginDirectory before calling this method
+        /// </summary>
         public void DumpWebDatasToJSON()
         {
-            if (!IsPluginDirectoryValid)
-            {
-                Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
-                return;
-            }
             string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{PR.default_json_name}.json");
             string jsonString = JsonSerializer.Serialize(WebDatas);
             try
@@ -110,11 +108,14 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
             }
         }
-        private async void DownloadIconAndUpdate()
+        /// <summary>
+        ///     Must check PluginDirectory before calling this method
+        /// </summary>
+        private async void DownloadIconAndUpdate(bool ForceDump = false)
         {
             List<Task<bool>> tasks = WebDatas.Select(k => k.DownloadIcon()).ToList();
-            await Task.WhenAll(tasks);
-            if (tasks.Any(k => k.Result))
+            _ = await Task.WhenAll(tasks);
+            if (ForceDump || tasks.Any(k => k.Result))
             {
                 DumpWebDatasToJSON();
             }
@@ -122,8 +123,12 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         public void AddWebData(WebData webData)
         {
             WebDatas.Add(webData);
-            DumpWebDatasToJSON();
-            DownloadIconAndUpdate();
+            if (!IsPluginDirectoryValid)
+            {
+                Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
+                return;
+            }
+            DownloadIconAndUpdate(true);
         }
     }
 }

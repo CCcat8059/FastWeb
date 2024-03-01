@@ -10,7 +10,6 @@ using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Classes;
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
-using System.Collections.Generic;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb
 {

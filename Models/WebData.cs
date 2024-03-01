@@ -24,12 +24,6 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
         }
         public async Task<bool> DownloadIcon()
         {
-            if (!DH.IsPluginDirectoryValid)
-            {
-                Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
-                return false;
-            }
-
             string iconPath = Path.Combine(DH.PluginDirectory, "Images", $"{Keyword}.png");
             if (!string.IsNullOrEmpty(IconPath) && File.Exists(iconPath))
             {
