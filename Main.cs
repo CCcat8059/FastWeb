@@ -10,6 +10,7 @@ using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Classes;
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
+using System.Collections.Generic;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb
 {
@@ -47,9 +48,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         {
             ArgumentNullException.ThrowIfNull(query);
 
-			if (DH.WebDatas is null)
+            List<Result> results = [];
+
+			if (DH.WebDatas.Count() == 0)
 			{
-				return [
+				results.Add(
 					new Result()
 					{
 						Title = "Can't not found json file",
@@ -57,15 +60,15 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 						IcoPath = _iconPath,
 						Action = action => { return true; }
 					}
-				];
+				);
 			}
 
             if (query.Search.StartsWith("+"))
             {
                 List<string> terms = new(query.Terms);
-                if (terms.Count < 2)
+                if (terms.Count != 3)
                 {
-                    return [
+                    results.Add(
                         new Result()
                         {
                             Title = "Add new keyword",
@@ -73,30 +76,30 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                             IcoPath = _iconPath,
                             Action = action => { return true; }
                         }
-                    ];
+                    );
                 }
-                terms.RemoveAt(0);
-                string keyword = terms[0], url = terms[1];
-                return [
-                    new Result()
-                    {
-                        Title = "Add new keyword",
-                        SubTitle = $"Keyword: {keyword}, URL: {url}",
-                        IcoPath = _iconPath,
-                        Action = action =>
+                else
+                {
+                    string keyword = terms[1], url = terms[2];
+                    results.Add(
+                        new Result()
                         {
-                            DH.AddWebData(new(keyword, url));
-                            return true;
+                            Title = "Add new keyword",
+                            SubTitle = $"Keyword: {keyword}, URL: {url}",
+                            IcoPath = _iconPath,
+                            Action = action =>
+                            {
+                                DH.AddWebData(new(keyword, url));
+                                return true;
+                            }
                         }
-                    }
-                ];
+                    );
+                }
             }
 
-			if (string.IsNullOrEmpty(query.Search))
-            {
-                return DH.GetDefaultData();
-            }
-            return DH.GetMatchingKeywords(query.Search);
+            results.AddRange(string.IsNullOrEmpty(query.Search) ?
+                             DH.GetDefaultData() : DH.GetMatchingKeywords(query.Search));
+            return results;
         }
 
         public void Init(PluginInitContext context)

@@ -17,32 +17,38 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
 {
     public class DataHandler
     {
-        public List<WebData>? WebDatas { get; }
+        public List<WebData> WebDatas { get; } = [];
         public DataHandler()
         {
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (PluginDirectory == null)
             {
-                Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
                 return;
             }
+
             string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{PR.default_json_name}.json");
+            if (!File.Exists(WebDataPath))
+            {
+                Log.Error($"Plugin: {PR.plugin_name}\ndefault JSON file not found ({PR.default_json_name}.json)", typeof(WebData));
+                return;
+            }
             WebDatas = LoadDataFromJSON(WebDataPath);
 
             _ = Task.Run(DownloadIconAndUpdate);
         }
-        private static List<WebData>? LoadDataFromJSON(string filePath)
+        private static List<WebData> LoadDataFromJSON(string filePath)
         {
             try
             {
                 string jsonString = File.ReadAllText(filePath);
-                List<WebData>? webData = JsonSerializer.Deserialize<List<WebData>>(jsonString);
+                List<WebData> webData = JsonSerializer.Deserialize<List<WebData>>(jsonString) ?? [];
                 return webData;
             }
             catch (Exception ex)
             {
                 Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
-                return null;
+                return [];
             }
         }
         private static List<Result> GetMappedResult(List<WebData> webDatas)
@@ -79,22 +85,18 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         }
         public List<Result> GetMatchingKeywords(string input)
         {
-            if (WebDatas == null)
-            {
-                return [];
-            }
             var results = WebDatas
                 .Where(k => (k.Keyword ?? "").AsSpan().IndexOf(input.AsSpan(), StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
             return GetMappedResult(results);
         }
-        public List<Result> GetDefaultData() => GetMappedResult(WebDatas ?? []);
+        public List<Result> GetDefaultData() => GetMappedResult(WebDatas);
         public void DumpWebDatasToJSON()
         {
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (PluginDirectory == null)
             {
-                Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
                 return;
             }
             string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{PR.default_json_name}.json");
@@ -110,19 +112,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         }
         private async void DownloadIconAndUpdate()
         {
-            if (WebDatas == null)
-            {
-                return;
-            }
             List<Task<bool>> tasks = WebDatas.Select(k => k.DownloadIcon()).ToList();
             await Task.WhenAll(tasks);
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
-            }
             if (tasks.Any(k => k.Result))
             {
                 DumpWebDatasToJSON();
@@ -130,7 +121,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         }
         public void AddWebData(WebData webData)
         {
-            WebDatas?.Add(webData);
+            WebDatas.Add(webData);
             DumpWebDatasToJSON();
             DownloadIconAndUpdate();
         }
