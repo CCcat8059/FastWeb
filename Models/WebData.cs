@@ -3,13 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 
-using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
 using Wox.Plugin.Logger;
 
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
+using DH = Community.PowerToys.Run.Plugin.FastWeb.Classes.DataHandler;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb.Models
 {
@@ -25,14 +24,13 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
         }
         public async Task<bool> DownloadIcon()
         {
-            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (PluginDirectory == null)
+            if (!DH.IsPluginDirectoryValid)
             {
                 Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
                 return false;
             }
 
-            string iconPath = Path.Combine(PluginDirectory, "Images", $"{Keyword}.png");
+            string iconPath = Path.Combine(DH.PluginDirectory, "Images", $"{Keyword}.png");
             if (!string.IsNullOrEmpty(IconPath) && File.Exists(iconPath))
             {
                 IconPath = $@"Images\{Keyword}.png";

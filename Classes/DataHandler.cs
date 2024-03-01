@@ -18,10 +18,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
     public class DataHandler
     {
         public List<WebData> WebDatas { get; } = [];
+        public static string PluginDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+        public static bool IsPluginDirectoryValid => !string.IsNullOrEmpty(PluginDirectory);
         public DataHandler()
         {
-            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (PluginDirectory == null)
+            if (!IsPluginDirectoryValid)
             {
                 Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
                 return;
@@ -93,8 +94,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         public List<Result> GetDefaultData() => GetMappedResult(WebDatas);
         public void DumpWebDatasToJSON()
         {
-            string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (PluginDirectory == null)
+            if (!IsPluginDirectoryValid)
             {
                 Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
                 return;
