@@ -55,8 +55,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 				results.Add(
 					new Result()
 					{
-						Title = "Can't not found json file",
-						SubTitle = "Please check json file.",
+                        Title = "Cannot find default JSON file",
+						SubTitle = $"Please check JSON file ({PR.default_json_name}.json) or use /w+ command to add new keyword.",
 						IcoPath = _iconPath,
 						Action = action => { return true; }
 					}
