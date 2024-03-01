@@ -7,9 +7,9 @@ using Microsoft.PowerToys.Settings.UI.Library;
 using System.Windows.Controls;
 using Wox.Plugin;
 using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
+
 using Community.PowerToys.Run.Plugin.FastWeb.Classes;
-using Community.PowerToys.Run.Plugin.FastWeb.Models;
-using Wox.Plugin.Logger;
+using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb
 {
@@ -24,9 +24,9 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         private string? _iconPath;
 
         private bool _disposed;
-        public string Name => Properties.Resources.plugin_name;
+        public string Name => PR.plugin_name;
 
-        public string Description => Properties.Resources.plugin_description;
+        public string Description => PR.plugin_description;
 
         public static string PluginID => "9f3525da-af82-4733-9654-860eaf2e756d";
 
@@ -109,12 +109,12 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public string GetTranslatedPluginTitle()
         {
-            return Properties.Resources.plugin_name;
+            return PR.plugin_name;
         }
 
         public string GetTranslatedPluginDescription()
         {
-            return Properties.Resources.plugin_description;
+            return PR.plugin_description;
         }
 
         private void OnThemeChanged(Theme oldtheme, Theme newTheme)

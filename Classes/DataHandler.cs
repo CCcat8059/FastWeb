@@ -11,6 +11,7 @@ using Wox.Infrastructure;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Models;
+using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
 {
@@ -22,7 +23,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (PluginDirectory == null)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
                 return;
             }
             string WebDataPath = Path.Combine(PluginDirectory, @"Settings\webdata.json");
@@ -40,7 +41,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             }
             catch (Exception ex)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
                 return null;
             }
         }
@@ -67,7 +68,6 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                     {
                         if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, element.URL))
                         {
-                            //_context?.API.ShowMsg($"Plugin: {Properties.Resources.plugin_name}\ncan't open {element.URL}");
                             // raise a exception to show error
                             return false;
                         }
@@ -94,7 +94,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (PluginDirectory == null)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
                 return;
             }
             string WebDataPath = Path.Combine(PluginDirectory, @"Settings\webdata.json");
@@ -105,7 +105,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             }
             catch (Exception ex)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
             }
         }
         private async void DownloadIconAndUpdate()
@@ -121,7 +121,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             }
             catch (Exception ex)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
             }
             if (tasks.Any(k => k.Result))
             {

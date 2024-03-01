@@ -9,6 +9,8 @@ using System.Net.Http;
 using System.Reflection;
 using Wox.Plugin.Logger;
 
+using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
+
 namespace Community.PowerToys.Run.Plugin.FastWeb.Models
 {
     public class WebData
@@ -26,7 +28,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
             string? PluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (PluginDirectory == null)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\npath not found", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
                 return false;
             }
 
@@ -50,7 +52,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
             }
             catch (Exception ex)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
                 return false;
             }
             return true;
@@ -69,7 +71,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
             }
             catch (Exception ex)
             {
-                Log.Error($"Plugin: {Properties.Resources.plugin_name}\n{ex}", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
             }
             return [];
         }
