@@ -26,10 +26,10 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
                 return;
             }
-            string WebDataPath = Path.Combine(PluginDirectory, @"Settings\webdata.json");
+            string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{PR.default_json_name}.json");
             WebDatas = LoadDataFromJSON(WebDataPath);
 
-            Task.Run(DownloadIconAndUpdate);
+            _ = Task.Run(DownloadIconAndUpdate);
         }
         private static List<WebData>? LoadDataFromJSON(string filePath)
         {
@@ -97,7 +97,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 Log.Error($"Plugin: {PR.plugin_name}\npath not found", typeof(WebData));
                 return;
             }
-            string WebDataPath = Path.Combine(PluginDirectory, @"Settings\webdata.json");
+            string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{PR.default_json_name}.json");
             string jsonString = JsonSerializer.Serialize(WebDatas);
             try
             {

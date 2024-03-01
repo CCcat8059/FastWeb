@@ -61,6 +61,15 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Properties {
         }
         
         /// <summary>
+        ///   查詢類似 Default 的當地語系化字串。
+        /// </summary>
+        internal static string default_json_name {
+            get {
+                return ResourceManager.GetString("default_json_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查詢類似 Open registered URL 的當地語系化字串。
         /// </summary>
         internal static string plugin_description {
