@@ -24,7 +24,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         public static Dictionary<string, string> IconPath => new()
         {
             { "FastWeb", @"Images\FastWeb.light.png" },
-            { "AddKeyword", @"Images\AddKeyword.light.png" }
+            { "AddKeyword", @"Images\AddKeyword.light.png" },
+            { "DeleteKeyword", @"Images\DeleteKeyword.light.png" }
         };
 
         private bool _disposed;
@@ -72,6 +73,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             }
             else if (query.Search.StartsWith("-"))
             {
+                return DH.GetRemovableList(query.Search);
             }
 
             results.AddRange(DH.GetMatchingKeywords(query.Search));

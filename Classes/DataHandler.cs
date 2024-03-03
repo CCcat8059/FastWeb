@@ -155,13 +155,23 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 }
             };
         }
-        public List<Result> RemovableList(string keyword = "")
+        public List<Result> GetRemovableList(string keyword)
         {
-            List<Result> results = [];
-            List<WebData> webDatas = [];
-            if (string.IsNullOrEmpty(keyword))
+            List<Result> results = GetMatchingKeywords(keyword[1..].Trim());
+            foreach (Result result in results)
             {
-                webDatas = WebDatas;
+                result.IcoPath = Main.IconPath["DeleteKeyword"];
+                result.Action = _ =>
+                {
+                    WebDatas.RemoveAll(w => w.Keyword == result.Title);
+                    if (!IsPluginDirectoryValid)
+                    {
+                        Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
+                        return false;
+                    }
+                    DumpWebDatasToJSON();
+                    return true;
+                };
             }
             return results;
         }
