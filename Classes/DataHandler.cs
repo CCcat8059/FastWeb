@@ -12,7 +12,6 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Models;
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
-using Wox.Plugin.Common.Win32;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
 {
@@ -118,7 +117,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         private async void DownloadIconAndUpdate(bool ForceDump = false)
         {
             List<Task<bool>> tasks = WebDatas.Select(k => k.DownloadIcon()).ToList();
-            _ = await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks);
             if (ForceDump || tasks.Any(k => k.Result))
             {
                 DumpWebDatasToJSON();

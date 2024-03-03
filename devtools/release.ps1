@@ -30,5 +30,5 @@ foreach ($arch in $archs) {
 	Compress-Archive "./release/$name" "./release/$name-$version-$arch.zip" -Force
 }
 
-gh release create $version (Get-ChildItem ./release/*.zip)
+gh release create $version (Get-ChildItem ./release/*.zip) --title $version --draft
 Pop-Location
