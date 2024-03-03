@@ -12,6 +12,7 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Models;
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
+using Wox.Plugin.Common.Win32;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
 {
@@ -54,18 +55,15 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         }
         private static List<Result> GetMappedResult(List<WebData> webDatas)
         {
-            var results = new List<Result>();
-            if (webDatas == null)
-            {
-                return results;
-            }
-            foreach (var element in webDatas)
+            List<Result> results = [];
+            foreach (WebData element in webDatas)
             {
                 string iconPath = element.IconPath;
                 if (string.IsNullOrEmpty(iconPath))
                 {
-                    iconPath = "Images\\FastWeb.light.png";
+                    iconPath = Main.IconPath["FastWeb"];
                 }
+
                 results.Add(new Result
                 {
                     Title = element.Keyword,
@@ -75,7 +73,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                     {
                         if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, element.URL))
                         {
-                            // raise a exception to show error
+                            Log.Error($"Plugin: {PR.plugin_name}\nCannot open {element.URL}", typeof(WebData));
                             return false;
                         }
                         return true;
@@ -84,14 +82,19 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             }
             return results;
         }
-        public List<Result> GetMatchingKeywords(string input)
+        public List<Result> GetMatchingKeywords(string input = "")
         {
+            if (string.IsNullOrEmpty(input))
+            {
+                return GetMappedResult(WebDatas);
+            }
+
             var results = WebDatas
                 .Where(k => (k.Keyword ?? "").AsSpan().IndexOf(input.AsSpan(), StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
             return GetMappedResult(results);
         }
-        public List<Result> GetDefaultData() => GetMappedResult(WebDatas);
+
         /// <summary>
         ///     Must check PluginDirectory before calling this method
         /// </summary>
@@ -108,6 +111,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
             }
         }
+
         /// <summary>
         ///     Must check PluginDirectory before calling this method
         /// </summary>
@@ -120,15 +124,47 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 DumpWebDatasToJSON();
             }
         }
-        public void AddWebData(WebData webData)
+        public Result AddWebData(List<string> terms)
         {
-            WebDatas.Add(webData);
-            if (!IsPluginDirectoryValid)
+            if (terms.Count != 3)
             {
-                Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
-                return;
+                return new()
+                {
+                    Title = "Add new keyword",
+                    SubTitle = "Usage: /w+ Keyword URL",
+                    IcoPath = Main.IconPath["AddKeyword"],
+                    Action = action => { return true; }
+                };
             }
-            DownloadIconAndUpdate(true);
+            string keyword = terms[1], url = terms[2];
+            return new() 
+            {
+                Title = "Add new keyword",
+                SubTitle = $"Keyword: {keyword}, URL: {url}",
+                IcoPath = Main.IconPath["AddKeyword"],
+                Action = action =>
+                {
+                    WebDatas.Add(new(keyword, url));
+                    if (!IsPluginDirectoryValid)
+                    {
+                        Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
+                        return false;
+                    }
+                    DownloadIconAndUpdate(true);
+                    return true;
+                }
+            };
+        }
+        public List<Result> RemovableList(string keyword = "")
+        {
+            List<Result> results = [];
+            List<WebData> webDatas = [];
+            if (string.IsNullOrEmpty(keyword))
+            {
+                webDatas = WebDatas;
+            }
+            return results;
         }
     }
 }
+

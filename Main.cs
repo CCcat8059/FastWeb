@@ -21,7 +21,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         private PluginInitContext? _context;
 
-        private string? _iconPath;
+        public static Dictionary<string, string> IconPath => new()
+        {
+            { "FastWeb", @"Images\FastWeb.light.png" },
+            { "AddKeyword", @"Images\AddKeyword.light.png" }
+        };
 
         private bool _disposed;
         public string Name => PR.plugin_name;
@@ -56,7 +60,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 					{
                         Title = "Cannot find default JSON file",
 						SubTitle = $"Please check JSON file ({PR.default_json_name}.json) or use /w+ command to add new keyword.",
-						IcoPath = _iconPath,
+						IcoPath = IconPath["FastWeb"],
 						Action = action => { return true; }
 					}
 				);
@@ -64,40 +68,13 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
             if (query.Search.StartsWith("+"))
             {
-                List<string> terms = new(query.Terms);
-                if (terms.Count != 3)
-                {
-                    results.Add(
-                        new Result()
-                        {
-                            Title = "Add new keyword",
-                            SubTitle = "Usage: /w+ [keyword] [URL]",
-                            IcoPath = _iconPath,
-                            Action = action => { return true; }
-                        }
-                    );
-                }
-                else
-                {
-                    string keyword = terms[1], url = terms[2];
-                    results.Add(
-                        new Result()
-                        {
-                            Title = "Add new keyword",
-                            SubTitle = $"Keyword: {keyword}, URL: {url}",
-                            IcoPath = _iconPath,
-                            Action = action =>
-                            {
-                                DH.AddWebData(new(keyword, url));
-                                return true;
-                            }
-                        }
-                    );
-                }
+                results.Add(DH.AddWebData(new(query.Terms)));
+            }
+            else if (query.Search.StartsWith("-"))
+            {
             }
 
-            results.AddRange(string.IsNullOrEmpty(query.Search) ?
-                             DH.GetDefaultData() : DH.GetMatchingKeywords(query.Search));
+            results.AddRange(DH.GetMatchingKeywords(query.Search));
             return results;
         }
 
@@ -105,6 +82,9 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
+
+            //IconPath.Add("FastWeb", @"Images\FastWeb.light.png");
+            //IconPath.Add("AddKeyword", @"Images\AddKeyword.light.png");
             UpdateIconPath(_context.API.GetCurrentTheme());
             DH = new();
         }
@@ -126,13 +106,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         private void UpdateIconPath(Theme theme)
         {
-            if (theme == Theme.Light || theme == Theme.HighContrastWhite)
+            bool isLightTheme = theme == Theme.Light || theme == Theme.HighContrastWhite;
+            foreach (string key in IconPath.Keys)
             {
-                _iconPath = "Images\\FastWeb.light.png";
-            }
-            else
-            {
-                _iconPath = "Images\\FastWeb.dark.png";
+                IconPath[key] = IconPath[key].Replace(isLightTheme ? "dark" : "light", 
+                                                      isLightTheme ? "light" : "dark");
             }
         }
 
