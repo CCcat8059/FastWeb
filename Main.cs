@@ -33,9 +33,9 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public static string PluginID => "9f3525da-af82-4733-9654-860eaf2e756d";
 
-        private static string PluginDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+        public static string PluginDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+        public static bool IsPluginDirectoryValid => !string.IsNullOrEmpty(PluginDirectory);
         private DataHandler DH;
-
         // setting
         private static string CurrentSettingFileName;
         private static List<string> SettingFileNames => new(

@@ -24,7 +24,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
         }
         public async Task<bool> DownloadIcon()
         {
-            string iconPath = Path.Combine(DH.PluginDirectory, "Images", $"{Keyword}.png");
+            string iconPath = Path.Combine(Main.PluginDirectory, "Images", $"{Keyword}.png");
             if (!string.IsNullOrEmpty(IconPath) && File.Exists(iconPath))
             {
                 IconPath = $@"Images\{Keyword}.png";
