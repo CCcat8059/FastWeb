@@ -86,10 +86,6 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             {
                 results.Add(DH.AddWebData(new(query.Terms)));
             }
-            else if (query.Search.StartsWith("-"))
-            {
-                return DH.GetRemovableList(query.Search);
-            }
 
             results.AddRange(DH.GetMatchingKeywords(query.Search));
             return results;
@@ -174,6 +170,19 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public List<ContextMenuResult> LoadContextMenus(Result selectedResult) => new List<ContextMenuResult>()
         {
+            new ContextMenuResult()
+            {
+                PluginName = PR.plugin_name,
+                Title = "Remove this keyword",
+                Glyph = "\xE74D",
+                FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                AcceleratorKey = System.Windows.Input.Key.D,
+                AcceleratorModifiers = System.Windows.Input.ModifierKeys.Control,
+                Action = _ =>
+                {
+                    return DH.RemoveKeyword(selectedResult.Title);
+                }
+            },
             new ContextMenuResult()
             {
                 PluginName = PR.plugin_name,
