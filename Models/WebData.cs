@@ -8,7 +8,6 @@ using System.Net.Http;
 using Wox.Plugin.Logger;
 
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
-using DH = Community.PowerToys.Run.Plugin.FastWeb.Classes.DataHandler;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb.Models
 {

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IO;
-using System.Reflection;
 using Wox.Plugin;
 using System.Text.Json;
 using Wox.Plugin.Logger;
@@ -68,7 +67,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                     Title = element.Keyword,
                     SubTitle = element.URL,
                     IcoPath = iconPath,
-                    Action = action =>
+                    Action = _ =>
                     {
                         if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, element.URL))
                         {

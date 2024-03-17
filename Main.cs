@@ -9,13 +9,17 @@ using Wox.Plugin;
 using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
 using System.IO;
 using System.Reflection;
+using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Classes;
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
+using Community.PowerToys.Run.Plugin.FastWeb.Models;
+using Wox.Plugin.Logger;
+using Wox.Infrastructure;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb
 {
-    public class Main : IPlugin, IPluginI18n, ISettingProvider, IReloadable, IDisposable
+    public class Main : IPlugin, IPluginI18n, ISettingProvider, IReloadable, IDisposable, IContextMenu
     {
         private PluginInitContext? _context;
 
@@ -167,5 +171,44 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                 _disposed = true;
             }
         }
+
+        public List<ContextMenuResult> LoadContextMenus(Result selectedResult) => new List<ContextMenuResult>()
+        {
+            new ContextMenuResult()
+            {
+                PluginName = PR.plugin_name,
+                Title = "Open in new window (Shift+Enter)",
+                Glyph = "\xE8A7",
+                FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                AcceleratorKey = System.Windows.Input.Key.Return,
+                AcceleratorModifiers = System.Windows.Input.ModifierKeys.Shift,
+                Action = _ =>
+                {
+                    if (!Helper.OpenInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
+                    {
+                        Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
+                        return false;
+                    }
+                    return true;
+                }
+            },
+            new ContextMenuResult()
+            {
+                PluginName = PR.plugin_name,
+                Title = "Open in new tab (Enter)",
+                Glyph = "\xE8AD",
+                FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                AcceleratorKey = System.Windows.Input.Key.Return,
+                Action = _ =>
+                {
+                    if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
+                    {
+                        Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
+                        return false;
+                    }
+                    return true;
+                }
+            }
+        };
     }
 }
