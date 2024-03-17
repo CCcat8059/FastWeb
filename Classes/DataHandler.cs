@@ -20,7 +20,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         public List<WebData> WebDatas { get; } = [];
         public static string PluginDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
         public static bool IsPluginDirectoryValid => !string.IsNullOrEmpty(PluginDirectory);
-        public DataHandler()
+        public readonly string FileName;
+        public DataHandler(string filename)
         {
             if (!IsPluginDirectoryValid)
             {
@@ -28,10 +29,11 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 return;
             }
 
-            string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{PR.default_json_name}.json");
+            FileName = filename;
+            string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{FileName}.json");
             if (!File.Exists(WebDataPath))
             {
-                Log.Error($"Plugin: {PR.plugin_name}\ndefault JSON file not found ({PR.default_json_name}.json)", typeof(WebData));
+                Log.Error($"Plugin: {PR.plugin_name}\ndefault JSON file not found ({FileName}.json)", typeof(WebData));
                 return;
             }
             WebDatas = LoadDataFromJSON(WebDataPath);
@@ -99,7 +101,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         /// </summary>
         public void DumpWebDatasToJSON()
         {
-            string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{PR.default_json_name}.json");
+            string WebDataPath = Path.Combine(PluginDirectory, $@"Settings\{FileName}.json");
             string jsonString = JsonSerializer.Serialize(WebDatas);
             try
             {

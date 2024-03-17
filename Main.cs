@@ -7,6 +7,8 @@ using Microsoft.PowerToys.Settings.UI.Library;
 using System.Windows.Controls;
 using Wox.Plugin;
 using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
+using System.IO;
+using System.Reflection;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Classes;
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
@@ -15,10 +17,6 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 {
     public class Main : IPlugin, IPluginI18n, ISettingProvider, IReloadable, IDisposable
     {
-        private const string Setting = nameof(Setting);
-        // current value of the setting
-        private bool _setting;
-
         private PluginInitContext? _context;
 
         public static Dictionary<string, string> IconPath => new()
@@ -35,16 +33,29 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public static string PluginID => "9f3525da-af82-4733-9654-860eaf2e756d";
 
+        private static string PluginDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
         private DataHandler DH;
+
+        // setting
+        private static string CurrentSettingFileName;
+        private static List<string> SettingFileNames => new(
+            Directory.GetFiles(Path.Combine(PluginDirectory, "Settings"), "*.json")
+            .Select(x => Path.GetFileNameWithoutExtension(x)));
 
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
         {
             new PluginAdditionalOption()
             {
-                Key = "Textbox",
-                DisplayDescription = "TextboxDescription",
-                DisplayLabel = "TextboxLabel",
-                PluginOptionType = AdditionalOptionType.CheckboxAndTextbox,
+                Key = "CurrentSettingFile",
+                DisplayDescription = "The JSON file that will be applied as setting, Default is Default.json",
+                DisplayLabel = "Current Setting File",
+                PluginOptionType = AdditionalOptionType.Combobox,
+                ComboBoxOptions = SettingFileNames,
+                ComboBoxValue = 0,
+                ComboBoxItems = SettingFileNames.Select((val, idx) =>
+                {
+                    return new KeyValuePair<string, string>(val, idx.ToString());
+                }).ToList()
             }
         };
 
@@ -85,10 +96,9 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
 
-            //IconPath.Add("FastWeb", @"Images\FastWeb.light.png");
-            //IconPath.Add("AddKeyword", @"Images\AddKeyword.light.png");
             UpdateIconPath(_context.API.GetCurrentTheme());
-            DH = new();
+
+            DH = new(CurrentSettingFileName);
         }
 
         public string GetTranslatedPluginTitle()
@@ -123,7 +133,10 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
-            _setting = settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == Setting)?.Value ?? false;
+            var GetSetting = (string key) => settings.AdditionalOptions.FirstOrDefault(set => set.Key == key);
+            int defaultSettingIndex = GetSetting("CurrentSettingFile").ComboBoxValue;
+            CurrentSettingFileName = SettingFileNames[defaultSettingIndex];
+            DH = new(CurrentSettingFileName);
         }
 
         public void ReloadData()
