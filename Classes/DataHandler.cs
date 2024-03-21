@@ -30,11 +30,12 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
             string WebDataPath = Path.Combine(Main.PluginDirectory, $@"Settings\{FileName}.json");
             if (!File.Exists(WebDataPath))
             {
-                Log.Error($"Plugin: {PR.plugin_name}\ndefault JSON file not found ({FileName}.json)", typeof(WebData));
+                File.WriteAllText(WebDataPath, "[]");
+                Log.Warn($"Plugin: {PR.plugin_name}\n{FileName}.json not found, created new file", typeof(WebData));
                 return;
             }
-            WebDatas = LoadDataFromJSON(WebDataPath);
 
+            WebDatas = LoadDataFromJSON(WebDataPath);
             _ = Task.Run(() => DownloadIconAndUpdate());
         }
         private static List<WebData> LoadDataFromJSON(string filePath)

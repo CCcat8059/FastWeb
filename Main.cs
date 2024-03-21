@@ -39,10 +39,12 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public static string PluginDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
         public static bool IsPluginDirectoryValid => !string.IsNullOrEmpty(PluginDirectory);
+
         private DataHandler DH;
         // setting
         private static string CurrentSettingFileName;
-        private static List<string> SettingFileNames => new(
+
+        private static List<string> SettingFileNames = new(
             Directory.GetFiles(Path.Combine(PluginDirectory, "Settings"), "*.json")
             .Select(x => Path.GetFileNameWithoutExtension(x)));
 
@@ -74,8 +76,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 				results.Add(
 					new Result()
 					{
-                        Title = "Cannot find default JSON file",
-						SubTitle = $"Please check JSON file ({PR.default_json_name}.json) or use /w+ command to add new keyword.",
+                        Title = "There are no keywords in your setting file",
+						SubTitle = $"use /w+ command to add new keyword ({DH.FileName}.json).",
 						IcoPath = IconPath["FastWeb"],
 						Action = action => { return true; }
 					}
@@ -135,6 +137,12 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         {
             var GetSetting = (string key) => settings.AdditionalOptions.FirstOrDefault(set => set.Key == key);
             int defaultSettingIndex = GetSetting("CurrentSettingFile").ComboBoxValue;
+
+            if (SettingFileNames.Count == 0)
+            {
+                defaultSettingIndex = 0;
+                SettingFileNames.Add(PR.default_json_name);
+            }
             CurrentSettingFileName = SettingFileNames[defaultSettingIndex];
             DH = new(CurrentSettingFileName);
         }
