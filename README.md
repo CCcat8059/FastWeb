@@ -10,7 +10,8 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 ![image](https://github.com/CCcat8059/FastWeb/assets/55608737/7801b318-db62-41a2-8700-49b86f0f2035)
 
 ### Add new keyword by command
-![image](https://github.com/CCcat8059/FastWeb/assets/55608737/d391c097-bbb5-4a47-960d-de3ea48f5ada)
+![image](https://github.com/CCcat8059/FastWeb/assets/55608737/bcc91b42-243f-4455-b94c-a71a36076190)
+
 
 
 
