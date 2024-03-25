@@ -86,7 +86,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
             if (query.Search.StartsWith("+"))
             {
-                results.Add(DH.AddWebData(new(query.Terms)));
+                results.Add(DH.GetAddDataResult(new(query.Terms)));
             }
 
             results.AddRange(DH.GetMatchingKeywords(query.Search));
@@ -178,16 +178,49 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 
         public List<ContextMenuResult> LoadContextMenus(Result selectedResult)
         {
+            if (selectedResult.Title == "Add new keyword" && selectedResult.SubTitle != "Usage: /w+ Keyword URL")
+            {
+                string[] words = selectedResult.SubTitle.Split(' ');
+                string keyword = words[1][..^1], url = words[^1];
+                return 
+                [
+                    new ContextMenuResult()
+                    {
+                        PluginName = PR.plugin_name,
+                        Title = "Add this keyword to new file (Shift+Enter)",
+                        Glyph = "\xE82E",
+                        FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                        AcceleratorKey = System.Windows.Input.Key.Enter,
+                        AcceleratorModifiers = System.Windows.Input.ModifierKeys.Shift,
+                        Action = _ =>
+                        {
+                            DH = new(keyword);
+                            DH.WebDatas.Add(new(keyword, url));
+                            DH.DumpWebDatasToJSON();
+                            return true;
+                        }
+                    },
+                    new ContextMenuResult()
+                    {
+                        PluginName = PR.plugin_name,
+                        Title = "Add this keyword to current file (Enter)",
+                        Glyph = "\xE710",
+                        FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                        AcceleratorKey = System.Windows.Input.Key.Enter,
+                        Action = _ => { return true; }
+                    }
+                ];
+            }
             if (!DH.WebDatas.Any(w => w.Keyword == selectedResult.Title && w.URL == selectedResult.SubTitle))
             {
                 return [];
             }
-            return new List<ContextMenuResult>()
-            {
+            return
+            [
                 new ContextMenuResult()
                 {
                     PluginName = PR.plugin_name,
-                    Title = "Remove this keyword",
+                    Title = "Remove this keyword (Ctrl+D)",
                     Glyph = "\xE74D",
                     FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
                     AcceleratorKey = System.Windows.Input.Key.D,
@@ -222,17 +255,9 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                     Glyph = "\xE8AD",
                     FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
                     AcceleratorKey = System.Windows.Input.Key.Return,
-                    Action = _ =>
-                    {
-                        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
-                        {
-                            Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
-                            return false;
-                        }
-                        return true;
-                    }
+                    Action = _ => { return true; }
                 }
-            };
+            ];
         }
     }
 }

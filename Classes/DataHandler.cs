@@ -123,7 +123,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 DumpWebDatasToJSON();
             }
         }
-        public Result AddWebData(List<string> terms)
+        public Result GetAddDataResult(List<string> terms)
         {
             if (terms.Count != 3)
             {
@@ -136,7 +136,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                 };
             }
             string keyword = terms[1], url = terms[2];
-            return new() 
+            return new()
             {
                 Title = "Add new keyword",
                 SubTitle = $"Keyword: {keyword}, URL: {url}",
