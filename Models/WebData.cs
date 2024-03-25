@@ -20,31 +20,36 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Models
             this.Keyword = Keyword;
             this.URL = URL;
         }
+        /// <summary>
+        ///  Download the icon of the website and save it to the Images folder
+        /// </summary>
+        /// <returns>If the icon is downloaded successfully</returns>
         public async Task<bool> DownloadIcon()
         {
-            string iconPath = Path.Combine(Main.PluginDirectory, "Images", $"{Keyword}.png");
-            if (!string.IsNullOrEmpty(IconPath) && File.Exists(iconPath))
+            string fullpath = Path.Combine(Main.PluginDirectory, "Images", $"{Keyword}.png");
+            if (File.Exists(fullpath))
             {
-                IconPath = $@"Images\{Keyword}.png";
+                IconPath = Path.Combine("Images", $"{Keyword}.png");
                 return false;
             }
 
             byte[] icon = await DownloadFaviconAsync(URL);
             if (icon.Length == 0)
             {
+                Log.Warn($"Plugin: {PR.plugin_name}\nFailed to download icon for {Keyword}", typeof(WebData));
                 return false;
             }
 
             try
             {
-                await File.WriteAllBytesAsync(iconPath, icon);
-                IconPath = $@"Images\{Keyword}.png";
+                await File.WriteAllBytesAsync(fullpath, icon);
             }
-            catch (Exception ex)
+            catch
             {
-                Log.Error($"Plugin: {PR.plugin_name}\n{ex}", typeof(WebData));
+                Log.Info($"Plugin: {PR.plugin_name}\nFailed to save icon for {Keyword}", typeof(WebData));
                 return false;
             }
+            IconPath = Path.Combine("Images", $"{Keyword}.png");
             return true;
         }
         private static async Task<byte[]> DownloadFaviconAsync(string url)

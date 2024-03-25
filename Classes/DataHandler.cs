@@ -116,7 +116,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         /// </summary>
         private async void DownloadIconAndUpdate(bool ForceDump = false)
         {
-            List<Task<bool>> tasks = WebDatas.Select(k => k.DownloadIcon()).ToList();
+            List<Task<bool>> tasks = WebDatas.Where(w => string.IsNullOrEmpty(w.IconPath)).Select(w => w.DownloadIcon()).ToList();
             await Task.WhenAll(tasks);
             if (ForceDump || tasks.Any(k => k.Result))
             {
