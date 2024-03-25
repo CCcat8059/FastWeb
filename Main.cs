@@ -176,56 +176,63 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             }
         }
 
-        public List<ContextMenuResult> LoadContextMenus(Result selectedResult) => new List<ContextMenuResult>()
+        public List<ContextMenuResult> LoadContextMenus(Result selectedResult)
         {
-            new ContextMenuResult()
+            if (!DH.WebDatas.Any(w => w.Keyword == selectedResult.Title && w.URL == selectedResult.SubTitle))
             {
-                PluginName = PR.plugin_name,
-                Title = "Remove this keyword",
-                Glyph = "\xE74D",
-                FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
-                AcceleratorKey = System.Windows.Input.Key.D,
-                AcceleratorModifiers = System.Windows.Input.ModifierKeys.Control,
-                Action = _ =>
-                {
-                    return DH.RemoveKeyword(selectedResult.Title);
-                }
-            },
-            new ContextMenuResult()
-            {
-                PluginName = PR.plugin_name,
-                Title = "Open in new window (Shift+Enter)",
-                Glyph = "\xE8A7",
-                FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
-                AcceleratorKey = System.Windows.Input.Key.Return,
-                AcceleratorModifiers = System.Windows.Input.ModifierKeys.Shift,
-                Action = _ =>
-                {
-                    if (!Helper.OpenInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
-                    {
-                        Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
-                        return false;
-                    }
-                    return true;
-                }
-            },
-            new ContextMenuResult()
-            {
-                PluginName = PR.plugin_name,
-                Title = "Open in new tab (Enter)",
-                Glyph = "\xE8AD",
-                FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
-                AcceleratorKey = System.Windows.Input.Key.Return,
-                Action = _ =>
-                {
-                    if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
-                    {
-                        Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
-                        return false;
-                    }
-                    return true;
-                }
+                return [];
             }
-        };
+            return new List<ContextMenuResult>()
+            {
+                new ContextMenuResult()
+                {
+                    PluginName = PR.plugin_name,
+                    Title = "Remove this keyword",
+                    Glyph = "\xE74D",
+                    FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                    AcceleratorKey = System.Windows.Input.Key.D,
+                    AcceleratorModifiers = System.Windows.Input.ModifierKeys.Control,
+                    Action = _ =>
+                    {
+                        return DH.RemoveKeyword(selectedResult.Title);
+                    }
+                },
+                new ContextMenuResult()
+                {
+                    PluginName = PR.plugin_name,
+                    Title = "Open in new window (Shift+Enter)",
+                    Glyph = "\xE8A7",
+                    FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                    AcceleratorKey = System.Windows.Input.Key.Return,
+                    AcceleratorModifiers = System.Windows.Input.ModifierKeys.Shift,
+                    Action = _ =>
+                    {
+                        if (!Helper.OpenInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
+                        {
+                            Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
+                            return false;
+                        }
+                        return true;
+                    }
+                },
+                new ContextMenuResult()
+                {
+                    PluginName = PR.plugin_name,
+                    Title = "Open in new tab (Enter)",
+                    Glyph = "\xE8AD",
+                    FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
+                    AcceleratorKey = System.Windows.Input.Key.Return,
+                    Action = _ =>
+                    {
+                        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
+                        {
+                            Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
+                            return false;
+                        }
+                        return true;
+                    }
+                }
+            };
+        }
     }
 }
