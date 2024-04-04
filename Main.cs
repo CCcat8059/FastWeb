@@ -9,13 +9,13 @@ using Wox.Plugin;
 using static Microsoft.PowerToys.Settings.UI.Library.PluginAdditionalOption;
 using System.IO;
 using System.Reflection;
+using Wox.Plugin.Logger;
+using Wox.Infrastructure;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Classes;
-using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
 using Community.PowerToys.Run.Plugin.FastWeb.Models;
-using Wox.Plugin.Logger;
-using Wox.Infrastructure;
+using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
 
 namespace Community.PowerToys.Run.Plugin.FastWeb
 {
@@ -240,7 +240,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                     AcceleratorModifiers = System.Windows.Input.ModifierKeys.Shift,
                     Action = _ =>
                     {
-                        if (!Helper.OpenInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, selectedResult.SubTitle))
+                        if (!Helper.OpenInShell(BrowserInfo.Path, $"--new-window {selectedResult.SubTitle}"))
                         {
                             Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
                             return false;
@@ -254,8 +254,15 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                     Title = "Open in new tab (Enter)",
                     Glyph = "\xE8AD",
                     FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
-                    AcceleratorKey = System.Windows.Input.Key.Return,
-                    Action = _ => { return true; }
+                    Action = _ => 
+                    {
+                        if (!Helper.OpenInShell(selectedResult.SubTitle))
+                        {
+                            Log.Error($"Plugin: {PR.plugin_name}\nCannot open {selectedResult.SubTitle}", typeof(WebData));
+                            return false;
+                        }
+                        return true;
+                    }
                 }
             ];
         }

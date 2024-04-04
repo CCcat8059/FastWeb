@@ -70,7 +70,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                     IcoPath = iconPath,
                     Action = _ =>
                     {
-                        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, element.URL))
+                        if (!Helper.OpenInShell(element.URL))
                         {
                             Log.Error($"Plugin: {PR.plugin_name}\nCannot open {element.URL}", typeof(WebData));
                             return false;
