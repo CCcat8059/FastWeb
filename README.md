@@ -4,15 +4,13 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 
 ## Features
 ### Open link in browser
-![image](https://github.com/CCcat8059/FastWeb/assets/55608737/8aaa9f47-39e7-4a77-b607-d8acc3176d1e)
+![image](DocsPic/MainFeature.png)
 
 ### Set your own favorite website in config file
-![image](https://github.com/CCcat8059/FastWeb/assets/55608737/7801b318-db62-41a2-8700-49b86f0f2035)
+![image](DocsPic/SettingFile.png)
 
 ### Add new keyword by command
-![image](https://github.com/CCcat8059/FastWeb/assets/55608737/bcc91b42-243f-4455-b94c-a71a36076190)
-
-
+![image](DocsPic/AddNewCommand.png)
 
 
 ## Installation
@@ -38,4 +36,7 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 4. Build the project.
 5. Run `Devtools\debug.ps1`.
 
-
+```
+If you find any bug in this plugin, 
+you're welcome to report it to me :)
+```

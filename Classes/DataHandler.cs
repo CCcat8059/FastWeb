@@ -7,7 +7,6 @@ using Wox.Plugin;
 using System.Text.Json;
 using Wox.Plugin.Logger;
 using Wox.Infrastructure;
-using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 using Community.PowerToys.Run.Plugin.FastWeb.Models;
 using PR = Community.PowerToys.Run.Plugin.FastWeb.Properties.Resources;
