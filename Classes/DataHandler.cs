@@ -155,14 +155,31 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         }
         public bool RemoveKeyword(string keyword)
         {
-            WebDatas.RemoveAll(w => w.Keyword == keyword);
             if (!Main.IsPluginDirectoryValid)
             {
                 Log.Error($"Plugin: {PR.plugin_name}\nplugin path not found", typeof(WebData));
                 return false;
             }
+            Func<string, bool> PathExists = name => File.Exists(Path.Combine(Main.PluginDirectory, "Images", $"{name}.png"));
+            List<string> RemoveIconPath = WebDatas.Where(w => w.Keyword == keyword && PathExists(w.Keyword))
+                .Select(w => Path.Combine(Main.PluginDirectory, "Images", $"{w.Keyword}.png")).ToList();
+            WebDatas.RemoveAll(w => w.Keyword == keyword);
+
+            bool SuccessFlag = true;
+            foreach (string fullpath in RemoveIconPath)
+            {
+                try
+                {
+                    File.Delete(fullpath);
+                }
+                catch
+                {
+                    Log.Error($"Plugin: {PR.plugin_name}\nCan't delete icon: {keyword}.png", typeof(WebData));
+                    SuccessFlag = false;
+                }
+            }
             DumpWebDatasToJSON();
-            return true;
+            return SuccessFlag;
         }
     }
 }
