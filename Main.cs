@@ -84,12 +84,12 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 				);
 			}
 
-            if (query.Search.StartsWith("+"))
+            results.AddRange(DH.GetMatchingKeywords(query.Search));
+            if (results.Count() == 0 || query.Terms.Count > 1)
             {
                 results.Add(DH.GetAddDataResult(new(query.Terms)));
             }
 
-            results.AddRange(DH.GetMatchingKeywords(query.Search));
             return results;
         }
 

@@ -124,7 +124,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
         }
         public Result GetAddDataResult(List<string> terms)
         {
-            if (terms.Count != 3)
+            if (terms.Count != 2)
             {
                 return new()
                 {
@@ -134,7 +134,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb.Classes
                     Action = action => { return true; }
                 };
             }
-            string keyword = terms[1], url = terms[2];
+            string keyword = terms[0], url = terms[1];
             return new()
             {
                 Title = "Add new keyword",
