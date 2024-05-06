@@ -1,7 +1,6 @@
 obj/
 bin/
 .vs/
-Lib/
 release/
 
-*.dll
+.idea/
