@@ -207,7 +207,12 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                         Glyph = "\xE710",
                         FontFamily = "Segoe Fluent Icons, Segoe MDL2 Assets",
                         AcceleratorKey = System.Windows.Input.Key.Enter,
-                        Action = _ => { return true; }
+                        Action = _ =>
+                        {
+                            DH.WebDatas.Add(new(keyword, url));
+                            DH.DumpWebDatasToJSON();
+                            return true;
+                        }
                     }
                 ];
             }
