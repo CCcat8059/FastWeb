@@ -1,0 +1,57 @@
+name: FastWeb build
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [arm64, x64]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Display dotnet version
+        run: dotnet --version
+
+      - name: Linking Lib for build
+        run: New-Item -Path Lib -ItemType SymbolicLink -Value .\.github\ci-resource
+
+      - name: Generate artifact name
+        id: name
+        run: |
+          $name = 'FastWeb'
+          $hash = $(git rev-parse --short HEAD)
+          $version = "v$((Get-Content ./plugin.json | ConvertFrom-Json).Version)-$hash"
+          $arch = "${{ matrix.arch }}"
+          $artifactName = "$name-$version-$arch"
+          echo "Artifact name: $artifactName"
+          echo "artifactName=$artifactName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Build and pack artifact
+        run: |
+          $name = 'FastWeb'
+          $assembly = "Community.PowerToys.Run.Plugin.$name"
+          $releasePath = "./bin/${{ matrix.arch }}/Release/net8.0-windows"
+          mkdir "./release/$name"
+
+          dotnet build -c Release /p:Platform=${{ matrix.arch }}
+
+          $files = @(
+            "$releasePath/$assembly.dll",
+            "$releasePath/plugin.json",
+            "$releasePath/Images",
+            "$releasePath/Settings",
+            "$releasePath/$assembly.deps.json"
+          )
+          Copy-Item $files "./release/$name" -Recurse -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.name.outputs.artifactName }}.zip
+          path: ./release/
