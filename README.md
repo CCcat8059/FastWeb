@@ -22,7 +22,7 @@ A [PowerToys Run](https://learn.microsoft.com/zh-tw/windows/powertoys/run) plugi
 1. Open PowerToys Run (default shortcut is `Alt+Space`).
 2. Type `/w` and search for website name that you set in file.
 
-## Debugging
+## How To Build
 1. Make sure you have [gsudo](https://github.com/gerardog/gsudo) installed in the path.
 2. Copy `.dll` from the PowerToys Run folder to `.\Lib`  
  (using symlink or running `Devtools\copyLib.ps1` is recommended).
