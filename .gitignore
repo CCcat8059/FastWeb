@@ -4,4 +4,4 @@ bin/
 Lib/
 release/
 
-*.dll
+*/*.dll
