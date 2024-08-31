@@ -53,7 +53,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             new PluginAdditionalOption()
             {
                 Key = "CurrentSettingFile",
-                DisplayDescription = "The JSON file that will be applied as setting, Default is Default.json",
+                DisplayDescription = "The JSON file that will be applied as setting (default: default.json)",
                 DisplayLabel = "Current Setting File",
                 PluginOptionType = AdditionalOptionType.Combobox,
                 ComboBoxOptions = SettingFileNames,

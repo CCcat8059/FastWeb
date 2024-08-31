@@ -68,7 +68,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Settings\Default.json">
+      <None Update="Settings\default.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
