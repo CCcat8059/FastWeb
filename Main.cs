@@ -68,6 +68,41 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         public List<Result> Query(Query query)
         {
             ArgumentNullException.ThrowIfNull(query);
+            if (query.Search.StartsWith(".r")) // reload
+            {
+                return [
+                    new Result()
+                    {
+                        Title = "Relaod Current Setting File",
+                        SubTitle = $"{DH.FileName}.json will be reload.",
+                        Action = action => 
+                        {
+                            ReloadData();
+                            return true;
+                        }
+                    }
+                ];
+            }
+            else if (query.Search.StartsWith(".c")) // config
+            {
+                return [
+                    new Result()
+                    {
+                        Title = "Open Current Setting File",
+                        SubTitle = $"{DH.FileName}.json will be open with default editor.",
+                        Action = action =>
+                        {
+                            string SettingPath = Path.Combine(PluginDirectory, "Settings");
+                            if (!Helper.OpenInShell(Path.Combine(SettingPath, $"{DH.FileName}.json")))
+                            {
+                                Log.Error($"Plugin: {PR.plugin_name}\nCannot open {DH.FileName}.json", GetType());
+                                return false;
+                            }
+                            return true;
+                        }
+                    }
+                ];
+            }
 
             List<Result> results = [];
 
