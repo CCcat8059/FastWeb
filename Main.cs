@@ -43,6 +43,7 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
         private DataHandler DH;
         // setting
         private static string CurrentSettingFileName;
+        private static bool OpenAddNewKeywordHint;
 
         private static List<string> SettingFileNames = new(
             Directory.GetFiles(Path.Combine(PluginDirectory, "Settings"), "*.json")
@@ -62,6 +63,13 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
                 {
                     return new KeyValuePair<string, string>(val, idx.ToString());
                 }).ToList()
+            },
+            new PluginAdditionalOption()
+            {
+                Key = "ToggleAddNewKeywordHint",
+                DisplayDescription = "To open/close the \"add new keyword\" hint.",
+                DisplayLabel = "Toggle Add New Keyword Result",
+                Value = true
             }
         };
 
@@ -120,7 +128,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
 			}
 
             results.AddRange(DH.GetMatchingKeywords(query.Search));
-            if (results.Count() == 0 || query.Terms.Count > 1)
+
+            if (OpenAddNewKeywordHint && (results.Count() == 0 || query.Terms.Count > 1))
             {
                 results.Add(DH.GetAddDataResult(new(query.Terms)));
             }
@@ -180,6 +189,8 @@ namespace Community.PowerToys.Run.Plugin.FastWeb
             }
             CurrentSettingFileName = SettingFileNames[defaultSettingIndex];
             DH = new(CurrentSettingFileName);
+
+            OpenAddNewKeywordHint = GetSetting("ToggleAddNewKeywordHint").Value;
         }
 
         public void ReloadData()
